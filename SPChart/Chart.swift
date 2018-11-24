@@ -24,7 +24,7 @@ class Chart: CustomDebugStringConvertible {
     
     init(pies: [Pie]) {
         let piesVolumSum = pies.map {$0.volume}.reduce(0, +)
-        assert(piesVolumSum == 1, "On doit avoir un volume égale a 1")
+        assert(piesVolumSum == 100, "On doit avoir un volume égale a 1")
         self.pies = pies
     }
 }
@@ -34,11 +34,11 @@ class Chart: CustomDebugStringConvertible {
 
 
 class Pie {
-    let volume: CGFloat
+    let volume: Int
     let color: UIColor
     
-    init(volume: CGFloat, color: UIColor) {
-        assert(0 < volume && volume <= 1, "Le volume doit être compris entre 0 et 1")
+    init(volume: Int, color: UIColor) {
+        assert(0 < volume && volume <= 100, "Le volume doit être compris entre 0 et 1")
         self.volume = volume
         self.color = color
     }

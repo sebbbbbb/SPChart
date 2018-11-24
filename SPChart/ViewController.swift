@@ -15,9 +15,12 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
     
         let chart = Chart(pies: [
-            Pie(volume: 0.3, color: UIColor.red),
-            Pie(volume: 0.3, color: UIColor.green),
-            Pie(volume: 0.4, color: UIColor.blue),
+            Pie(volume: 20, color: UIColor.red),
+            Pie(volume: 30, color: UIColor.green),
+            Pie(volume: 20, color: UIColor.blue),
+            Pie(volume: 10, color: UIColor.orange),
+            Pie(volume: 10, color: UIColor.white),
+            Pie(volume: 10, color: UIColor.purple),
         ])
         
         let chartView = ChartView()
@@ -38,40 +41,31 @@ class ChartView: UIView {
     var char: Chart!
     
     override func draw(_ rect: CGRect) {
-        
-        
-        let firstPie = char.pies[0]
-        
-        UIColor.red.setFill()
-       
-        let path = UIBezierPath()
-        path.move(to: CGPoint(x: 250.0, y: 250.0))
-        path.addArc(withCenter: CGPoint(x: 250, y: 250), radius: 50, startAngle: CGFloat(270).toRadians(), endAngle: self.computeAngle(volume: firstPie.volume) + CGFloat(270).toRadians(), clockwise: true)
-        path.close()
-        path.fill()
-        
-        let secondPie = char.pies[1]
-        
-        UIColor.green.setFill()
-        
-        let path2 = UIBezierPath()
-        path2.move(to: CGPoint(x: 250.0, y: 250.0))
-     //   path2.addLine(to: CGPoint(x: 250.0, y: 300.0))
-        path2.addArc(withCenter: CGPoint(x: 250, y: 250), radius: 50, startAngle: self.computeAngle(volume: firstPie.volume) + CGFloat(270).toRadians(), endAngle: self.computeAngle(volume: firstPie.volume) + self.computeAngle(volume: secondPie.volume) + CGFloat(270).toRadians(), clockwise: true)
-        path2.close()
-        path2.fill()
-        
-        
-        let thirdPie = char.pies[2]
-        
-        UIColor.blue.setFill()
-        let path3 = UIBezierPath()
-        path3.move(to: CGPoint(x: 250.0, y: 250.0))
-        path3.addArc(withCenter: CGPoint(x: 250, y: 250), radius: 50, startAngle: self.computeAngle(volume: firstPie.volume) + self.computeAngle(volume: secondPie.volume) + CGFloat(270).toRadians(), endAngle: self.computeAngle(volume: firstPie.volume) + self.computeAngle(volume: secondPie.volume) + CGFloat(270).toRadians() + self.computeAngle(volume: thirdPie.volume) , clockwise: true)
-        path3.close()
-        path3.fill()
-        
-        
+        let center = self.center
+        let radius: CGFloat = (rect.width / 2) - 20
+        let angleComputer = accumulator(delfautAngle: CGFloat(270).toRadians())
+        for pie in char.pies {
+            let pieAngle = self.computeAngle(volume: CGFloat(Double(pie.volume) / 100.0))
+            let endAngle = angleComputer(pieAngle)
+            let startAngle = endAngle - pieAngle
+            pie.color.setFill()
+            UIColor.white.setStroke()
+            let path = UIBezierPath()
+            path.move(to: center)
+            path.addArc(withCenter: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
+            path.lineWidth = 2.0
+            path.close()
+            path.fill()
+            path.stroke()
+        }
+    }
+    
+    func accumulator(delfautAngle: CGFloat) -> (CGFloat) -> (CGFloat) {
+        var angle = delfautAngle
+        return { nextAngle in
+            angle += nextAngle
+            return angle
+        }
     }
     
     private func computeAngle(volume: CGFloat) -> CGFloat {
@@ -82,6 +76,6 @@ class ChartView: UIView {
 
 extension CGFloat {
     func toRadians() -> CGFloat {
-        return self * CGFloat(M_PI) / 180.0
+        return self * CGFloat.pi / 180.0
     }
 }
